@@ -13,7 +13,7 @@ import (
 	"hash/crc32"
 	"io"
 
-	"github.com/ulikunitz/xz/lzma"
+	"github.com/blacktop/xz/lzma"
 )
 
 // allZeros checks whether a given byte slice has only zeros.
@@ -46,7 +46,8 @@ const HeaderLen = 12
 
 // Constants for the checksum methods supported by xz.
 const (
-	CRC32  byte = 0x1
+	None   byte = 0x0
+	CRC32       = 0x1
 	CRC64       = 0x4
 	SHA256      = 0xa
 )
@@ -58,7 +59,7 @@ var errInvalidFlags = errors.New("xz: invalid flags")
 // invalid.
 func verifyFlags(flags byte) error {
 	switch flags {
-	case CRC32, CRC64, SHA256:
+	case None, CRC32, CRC64, SHA256:
 		return nil
 	default:
 		return errInvalidFlags
@@ -67,6 +68,7 @@ func verifyFlags(flags byte) error {
 
 // flagstrings maps flag values to strings.
 var flagstrings = map[byte]string{
+	None:   "None",
 	CRC32:  "CRC-32",
 	CRC64:  "CRC-64",
 	SHA256: "SHA-256",
@@ -85,6 +87,8 @@ func flagString(flags byte) string {
 // hash method encoded in flags.
 func newHashFunc(flags byte) (newHash func() hash.Hash, err error) {
 	switch flags {
+	case None:
+		newHash = nil
 	case CRC32:
 		newHash = newCRC32
 	case CRC64:
@@ -412,8 +416,8 @@ func (h *blockHeader) UnmarshalBinary(data []byte) error {
 	k := r.Len()
 	// The standard spec says that the padding should have not more
 	// than 3 bytes. However we found paddings of 4 or 5 in the
-	// wild. See https://github.com/ulikunitz/xz/pull/11 and
-	// https://github.com/ulikunitz/xz/issues/15
+	// wild. See https://github.com/blacktop/xz/pull/11 and
+	// https://github.com/blacktop/xz/issues/15
 	//
 	// The only reasonable approach seems to be to ignore the
 	// padding size. We still check that all padding bytes are zero.

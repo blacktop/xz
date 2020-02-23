@@ -25,7 +25,7 @@ import (
     "log"
     "os"
 
-    "github.com/ulikunitz/xz"
+    "github.com/blacktop/xz"
 )
 
 func main() {
@@ -60,7 +60,7 @@ decompression.
 
 Use following command for installation:
 
-    $ go get github.com/ulikunitz/xz/cmd/gxz
+    $ go get github.com/blacktop/xz/cmd/gxz
 
 To test it call the following command.
 

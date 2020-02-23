@@ -1,1 +1,3 @@
-module github.com/ulikunitz/xz
+module github.com/blacktop/xz
+
+go 1.13
